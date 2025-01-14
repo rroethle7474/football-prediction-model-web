@@ -39,7 +39,7 @@ steps:
 
 - task: AzureWebApp@1
   inputs:
-    azureSubscription: '$(azureServiceConnection)' # Replace with your service connection name
-    appName: '$(webAppName)' # Replace with your web app name
+    azureSubscription: 'PredictionTimeAzure'
+    appName: 'prediction-time-v1'
     package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     deploymentMethod: 'auto' 
