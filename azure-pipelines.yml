@@ -2,7 +2,7 @@ trigger:
   - main
 
 variables:
-  NEXT_PUBLIC_API_BASE_URL: '$(apiBaseUrl)' # This will be set in Azure DevOps pipeline variables
+  NEXT_PUBLIC_API_BASE_URL: '$(apiBaseUrl)' 
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -26,30 +26,26 @@ steps:
 - script: |
     echo "Checking standalone directory structure:"
     ls -la $(System.DefaultWorkingDirectory)/.next/standalone/
-    echo "Checking server.js specifically:"
-    ls -la $(System.DefaultWorkingDirectory)/.next/standalone/server.js
   displayName: 'Verify build output structure'
 
 - script: |
-    cp -r $(System.DefaultWorkingDirectory)/public $(System.DefaultWorkingDirectory)/.next/standalone/
-  displayName: 'Copy public assets'
+    mkdir -p $(Build.ArtifactStagingDirectory)/site
+    cp -r $(System.DefaultWorkingDirectory)/.next/standalone/* $(Build.ArtifactStagingDirectory)/site/
+    cp -r $(System.DefaultWorkingDirectory)/.next/static $(Build.ArtifactStagingDirectory)/site/.next/static
+    cp -r $(System.DefaultWorkingDirectory)/public $(Build.ArtifactStagingDirectory)/site/
+  displayName: 'Prepare deployment package'
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/.next/standalone'
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/site'
     includeRootFolder: false
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     replaceExistingArchive: true
-    verbose: true
-
-- script: |
-    cp $(System.DefaultWorkingDirectory)/.next/standalone/server.js $(Build.ArtifactStagingDirectory)/server.js
-  displayName: 'Backup copy of server.js'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     ArtifactName: 'drop'
     publishLocation: 'Container'
 
@@ -59,4 +55,4 @@ steps:
     appName: 'prediction-time-v1'
     package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     deploymentMethod: 'auto'
-    startUpCommand: 'NODE_ENV=production node server.js'
+    startUpCommand: 'node server.js'
