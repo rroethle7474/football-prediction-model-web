@@ -26,17 +26,25 @@ steps:
 - script: |
     echo "Preparing deployment package..."
     mkdir -p $(Build.ArtifactStagingDirectory)/site
-    # Copy standalone files
+    # Copy standalone files first
     cp -r $(System.DefaultWorkingDirectory)/.next/standalone/* $(Build.ArtifactStagingDirectory)/site/
-    # Create .next directory and copy required files
+    
+    # Create and populate .next directory with ALL necessary files
     mkdir -p $(Build.ArtifactStagingDirectory)/site/.next
     cp -r $(System.DefaultWorkingDirectory)/.next/static $(Build.ArtifactStagingDirectory)/site/.next/
+    cp -r $(System.DefaultWorkingDirectory)/.next/types $(Build.ArtifactStagingDirectory)/site/.next/ || true
     cp $(System.DefaultWorkingDirectory)/.next/BUILD_ID $(Build.ArtifactStagingDirectory)/site/.next/
-    cp -r $(System.DefaultWorkingDirectory)/.next/required-server-files.json $(Build.ArtifactStagingDirectory)/site/.next/
-    # Copy public files if they exist
+    cp $(System.DefaultWorkingDirectory)/.next/build-manifest.json $(Build.ArtifactStagingDirectory)/site/.next/
+    cp $(System.DefaultWorkingDirectory)/.next/prerender-manifest.json $(Build.ArtifactStagingDirectory)/site/.next/
+    cp $(System.DefaultWorkingDirectory)/.next/routes-manifest.json $(Build.ArtifactStagingDirectory)/site/.next/
+    cp $(System.DefaultWorkingDirectory)/.next/server/pages-manifest.json $(Build.ArtifactStagingDirectory)/site/.next/ || true
+    cp $(System.DefaultWorkingDirectory)/.next/required-server-files.json $(Build.ArtifactStagingDirectory)/site/.next/
+    
+    # Copy public directory if it exists
     if [ -d "$(System.DefaultWorkingDirectory)/public" ]; then
       cp -r $(System.DefaultWorkingDirectory)/public $(Build.ArtifactStagingDirectory)/site/
     fi
+    
     echo "Deployment package contents:"
     ls -la $(Build.ArtifactStagingDirectory)/site/
     echo "Contents of .next directory:"
