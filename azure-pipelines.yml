@@ -25,7 +25,7 @@ steps:
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/.next'
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/.next/standalone'
     includeRootFolder: false
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
@@ -42,4 +42,5 @@ steps:
     azureSubscription: 'PredictionTimeAzure'
     appName: 'prediction-time-v1'
     package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    deploymentMethod: 'auto' 
+    deploymentMethod: 'auto'
+    startUpCommand: 'node server.js' 
