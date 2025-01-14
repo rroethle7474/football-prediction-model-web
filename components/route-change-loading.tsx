@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
-export function RouteChangeLoading() {
+function RouteChangeLoadingInner() {
   const [isLoading, setIsLoading] = useState(false)
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -18,4 +18,12 @@ export function RouteChangeLoading() {
   if (!isLoading) return null
 
   return <LoadingSpinner />
+}
+
+export function RouteChangeLoading() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <RouteChangeLoadingInner />
+    </Suspense>
+  )
 }

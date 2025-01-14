@@ -16,11 +16,24 @@ const NFL_TEAMS = [
   'Seattle', 'Tampa Bay', 'Tennessee', 'Washington'
 ]
 
+interface PredictionResults {
+  awayPassingYards: number;
+  awayPassingAttempts: number;
+  homePassingYards: number;
+  homePassingAttempts: number;
+  awayRushingYards: number;
+  awayRushingAttempts: number;
+  homeRushingYards: number;
+  homeRushingAttempts: number;
+  awayTimeOfPossession: string;
+  homeTimeOfPossession: string;
+}
+
 export default function Predict() {
   const [awayTeam, setAwayTeam] = useState('')
   const [homeTeam, setHomeTeam] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [results, setResults] = useState(null)
+  const [results, setResults] = useState<PredictionResults | null>(null)
   const [models, setModels] = useState<string[]>([])
   const [selectedModel, setSelectedModel] = useState('')
 

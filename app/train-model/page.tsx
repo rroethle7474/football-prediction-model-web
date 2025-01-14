@@ -32,6 +32,7 @@ export default function TrainModel() {
   const [selectedDeleteModel, setSelectedDeleteModel] = useState('')
   const [fileValidation, setFileValidation] = useState<{ isValid: boolean; message?: string } | null>(null)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
+  const [password, setPassword] = useState('')
 
   useEffect(() => {
     fetchModels();
@@ -41,6 +42,7 @@ export default function TrainModel() {
     try {
       const response = await getModels();
       setAvailableModels(response.models);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setStatus({ type: 'error', message: 'Failed to fetch models' });
     }
@@ -78,6 +80,7 @@ export default function TrainModel() {
         setFile(null)
         event.target.value = '' // Reset file input
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setFile(null)
       setFileValidation({
@@ -89,8 +92,8 @@ export default function TrainModel() {
   }
 
   const handleSubmit = async () => {
-    if (!file || !selectedModel) {
-      setStatus({ type: 'error', message: 'Please select both a file and model' })
+    if (!file || !selectedModel || !password) {
+      setStatus({ type: 'error', message: 'Please select a file, model name, and enter the password' })
       return
     }
 
@@ -98,7 +101,7 @@ export default function TrainModel() {
     setStatus(null)
 
     try {
-      const uploadResult = await uploadFile(file, 'actualResults')
+      const uploadResult = await uploadFile(file, 'actualResults', password)
       
       if (uploadResult.status === 'error') {
         setStatus({ 
@@ -116,6 +119,7 @@ export default function TrainModel() {
         setSelectedModel('')
         setSplitRatio(80)
         setFileValidation(null)
+        setPassword('')
         // Reset file input
         const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
         if (fileInput) fileInput.value = ''
@@ -138,8 +142,8 @@ export default function TrainModel() {
   }
 
   const handleDeleteModel = async () => {
-    if (!selectedDeleteModel) {
-      setStatus({ type: 'error', message: 'Please select a model to delete' });
+    if (!selectedDeleteModel || !password) {
+      setStatus({ type: 'error', message: 'Please select a model to delete and enter the password' });
       return;
     }
 
@@ -147,7 +151,7 @@ export default function TrainModel() {
     if (!confirmed) return;
 
     try {
-      const result = await deleteModel(selectedDeleteModel);
+      const result = await deleteModel(selectedDeleteModel, password);
       setStatus({ 
         type: result.status === 'success' ? 'success' : 'error',
         message: result.message 
@@ -157,7 +161,9 @@ export default function TrainModel() {
         const response = await getModels();
         setAvailableModels(response.models);
         setSelectedDeleteModel('');
+        setPassword('');
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setStatus({ 
         type: 'error', 
@@ -186,6 +192,19 @@ export default function TrainModel() {
               placeholder="Enter model name"
               className="w-full p-2 rounded-md border border-input bg-background"
               aria-label="Enter model name"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Enter password"
+              className="w-full p-2 rounded-md border border-input bg-background"
+              aria-label="Enter password"
             />
           </div>
 

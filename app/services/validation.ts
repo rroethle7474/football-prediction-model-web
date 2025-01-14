@@ -155,6 +155,7 @@ export const validateFeaturesCSV = (file: File, isTimeOfPossession = false): Pro
         }, {});
 
         const duplicateTeams = Object.entries(teamCounts)
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           .filter(([_, count]) => count > 1)
           .map(([team]) => team);
 

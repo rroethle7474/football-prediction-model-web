@@ -106,6 +106,7 @@ export default function BuildModel() {
         const response = await getStatsStatus()
         setStatsStatus(response)
         setStatsError(null)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         setStatsError('Stats status cannot be determined')
         setStatsStatus(null)
@@ -126,6 +127,7 @@ export default function BuildModel() {
       }))
 
       return validation.isValid
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setFileValidations(prev => ({
         ...prev,
@@ -174,13 +176,14 @@ export default function BuildModel() {
       if (!file) continue;
 
       try {
-        const result = await uploadFile(file, fileType);
+        const result = await uploadFile(file, fileType, uploadPassword);
         results.push({
           fileType,
           status: 'success',
           message: result.message
         });
         hasAnySuccess = true;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         results.push({
           fileType,
@@ -193,9 +196,10 @@ export default function BuildModel() {
     // If any file was successfully uploaded, update stats
     if (hasAnySuccess) {
       try {
-        await updateStats();
+        await updateStats(uploadPassword);
         const response = await getStatsStatus();
         setStatsStatus(response);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         results.push({
           fileType: 'stats',
@@ -226,7 +230,7 @@ export default function BuildModel() {
     });
 
     // Reset all file input elements
-    document.querySelectorAll('input[type="file"]').forEach((input: HTMLInputElement) => {
+    Array.from(document.querySelectorAll<HTMLInputElement>('input[type="file"]')).forEach((input) => {
       input.value = '';
     });
 
@@ -263,6 +267,7 @@ export default function BuildModel() {
       await updateStats(statsPassword)
       const response = await getStatsStatus()
       setStatsStatus(response)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setUpdateStatsError(error instanceof Error ? error.message : 'Failed to update stats')
     } finally {
@@ -281,6 +286,7 @@ export default function BuildModel() {
       await clearCache(statsPassword)
       const response = await getStatsStatus()
       setStatsStatus(response)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setClearStatsError(error instanceof Error ? error.message : 'Failed to clear stats')
     } finally {
