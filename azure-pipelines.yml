@@ -23,6 +23,17 @@ steps:
   env:
     NEXT_PUBLIC_API_BASE_URL: $(NEXT_PUBLIC_API_BASE_URL)
 
+- script: |
+    echo "Checking standalone directory structure:"
+    ls -la $(System.DefaultWorkingDirectory)/.next/standalone/
+    echo "Checking server.js specifically:"
+    ls -la $(System.DefaultWorkingDirectory)/.next/standalone/server.js
+  displayName: 'Verify build output structure'
+
+- script: |
+    cp -r $(System.DefaultWorkingDirectory)/public $(System.DefaultWorkingDirectory)/.next/standalone/
+  displayName: 'Copy public assets'
+
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(System.DefaultWorkingDirectory)/.next/standalone'
@@ -30,6 +41,11 @@ steps:
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     replaceExistingArchive: true
+    verbose: true
+
+- script: |
+    cp $(System.DefaultWorkingDirectory)/.next/standalone/server.js $(Build.ArtifactStagingDirectory)/server.js
+  displayName: 'Backup copy of server.js'
 
 - task: PublishBuildArtifacts@1
   inputs:
@@ -43,4 +59,4 @@ steps:
     appName: 'prediction-time-v1'
     package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     deploymentMethod: 'auto'
-    startUpCommand: 'node server.js' 
+    startUpCommand: 'NODE_ENV=production node server.js'
