@@ -19,7 +19,7 @@ export async function deleteModel(modelName: string, password: string): Promise<
     return response.json();
 }
 
-export async function trainModel(modelName: string, trainingSplit: number): Promise<{ status: string; message: string }> {
+export async function trainModel(modelName: string, trainingSplit: number, modelDescription: string, password: string): Promise<{ status: string; message: string }> {
   const response = await fetch(`${API_BASE_URL}/trainModel`, {
     method: 'POST',
     headers: {
@@ -28,6 +28,8 @@ export async function trainModel(modelName: string, trainingSplit: number): Prom
     body: JSON.stringify({
       modelName: modelName,
       trainingSplit: 1 - trainingSplit/100, // Convert from percentage to decimal
+      modelDescription: modelDescription, // Add the new field
+      password: password,
     }),
   });
 

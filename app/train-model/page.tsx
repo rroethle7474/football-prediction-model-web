@@ -42,6 +42,7 @@ export default function TrainModel() {
   const [fileValidation, setFileValidation] = useState<{ isValid: boolean; message?: string } | null>(null)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
   const [password, setPassword] = useState('')
+  const [modelDescription, setModelDescription] = useState('')
 
   useEffect(() => {
     fetchModels();
@@ -104,8 +105,8 @@ export default function TrainModel() {
   }
 
   const handleSubmit = async () => {
-    if (!file || !selectedModel || !password) {
-      setStatus({ type: 'error', message: 'Please select a file, model name, and enter the password' })
+    if (!file || !selectedModel || !password || !modelDescription) {
+      setStatus({ type: 'error', message: 'Please select a file, model name, enter the password, and enter the model description' })
       return
     }
 
@@ -123,7 +124,7 @@ export default function TrainModel() {
         return
       }
 
-      const result = await trainModel(selectedModel, splitRatio)
+      const result = await trainModel(selectedModel, splitRatio, modelDescription, password)
       
       if (result.status === 'success') {
         // Clear form on success
@@ -132,6 +133,7 @@ export default function TrainModel() {
         setSplitRatio(80)
         setFileValidation(null)
         setPassword('')
+        setModelDescription('') // Clear description too
         // Reset file input
         const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
         if (fileInput) fileInput.value = ''
@@ -204,6 +206,16 @@ export default function TrainModel() {
               placeholder="Enter model name"
               className="w-full p-2 rounded-md border border-input bg-background"
               aria-label="Enter model name"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Model Description</label>
+            <textarea
+              value={modelDescription}
+              onChange={(e) => setModelDescription(e.target.value)}
+              placeholder="Enter model description..."
+              className="w-full p-2 rounded-md border border-input bg-background min-h-[100px] resize-y"
+              aria-label="Enter model description"
             />
           </div>
 
