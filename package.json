@@ -11,6 +11,7 @@
   "dependencies": {
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-tabs": "^1.1.2",
     "@types/papaparse": "^5.3.15",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -19,6 +20,7 @@
     "papaparse": "^5.4.1",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
+    "react-markdown": "^8.0.7",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7"
   },
@@ -29,7 +31,7 @@
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
     "postcss": "^8",
-    "shadcn-ui": "^0.9.3",
+    "shadcn-ui": "^0.9.4",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }

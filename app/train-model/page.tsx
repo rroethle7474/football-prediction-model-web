@@ -22,14 +22,23 @@ type StatusType = {
   message: string;
 } | null;
 
-export default function TrainModel() {
+interface ModelInfo {
+  name: string;
+  description: string[];
+  tags: string[];
+  lastModified: string;
+  readme: string | null;
+}
+
+export default function TrainModel() {  
   const [file, setFile] = useState<File | null>(null)
   const [splitRatio, setSplitRatio] = useState(80)
   const [selectedModel, setSelectedModel] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [status, setStatus] = useState<StatusType>(null)
-  const [availableModels, setAvailableModels] = useState<string[]>([])
+  const [availableModels, setAvailableModels] = useState<ModelInfo[]>([])
   const [selectedDeleteModel, setSelectedDeleteModel] = useState('')
+  const [deletePassword, setDeletePassword] = useState('')
   const [fileValidation, setFileValidation] = useState<{ isValid: boolean; message?: string } | null>(null)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
   const [password, setPassword] = useState('')
@@ -41,10 +50,13 @@ export default function TrainModel() {
   const fetchModels = async () => {
     try {
       const response = await getModels();
-      setAvailableModels(response.models);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      if (response.status === 'success') {
+        setAvailableModels(response.models);
+      } else {
+        setStatus({ type: 'error', message: 'Failed to fetch models' });
+      }
     } catch (error) {
-      setStatus({ type: 'error', message: 'Failed to fetch models' });
+      setStatus({ type: 'error', message: error instanceof Error ? error.message : 'Failed to fetch models' });
     }
   };
 
@@ -142,7 +154,7 @@ export default function TrainModel() {
   }
 
   const handleDeleteModel = async () => {
-    if (!selectedDeleteModel || !password) {
+    if (!selectedDeleteModel || !deletePassword) {
       setStatus({ type: 'error', message: 'Please select a model to delete and enter the password' });
       return;
     }
@@ -151,7 +163,7 @@ export default function TrainModel() {
     if (!confirmed) return;
 
     try {
-      const result = await deleteModel(selectedDeleteModel, password);
+      const result = await deleteModel(selectedDeleteModel, deletePassword);
       setStatus({ 
         type: result.status === 'success' ? 'success' : 'error',
         message: result.message 
@@ -161,7 +173,7 @@ export default function TrainModel() {
         const response = await getModels();
         setAvailableModels(response.models);
         setSelectedDeleteModel('');
-        setPassword('');
+        setDeletePassword('');
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -314,18 +326,31 @@ export default function TrainModel() {
           <div className="space-y-2">
             <label className="text-sm font-medium">Select Model</label>
             <select
-              value={selectedDeleteModel}
-              onChange={(e) => setSelectedDeleteModel(e.target.value)}
+        value={selectedDeleteModel}
+        onChange={(e) => setSelectedDeleteModel(e.target.value)}
+        className="w-full p-2 rounded-md border border-input bg-background"
+        aria-label="Select model to delete"
+      >
+        <option value="">Select a model</option>
+        {availableModels.map((model) => (
+          <option key={model.name} value={model.name}>
+            {model.name}
+          </option>
+        ))}
+      </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Password</label>
+            <input
+              type="password"
+              value={deletePassword}
+              onChange={(e) => setDeletePassword(e.target.value)}
+              required
+              placeholder="Enter password to delete model"
               className="w-full p-2 rounded-md border border-input bg-background"
-              aria-label="Select model to delete"
-            >
-              <option value="">Select a model</option>
-              {availableModels.map((model) => (
-                <option key={model} value={model}>
-                  {model}
-                </option>
-              ))}
-            </select>
+              aria-label="Enter password to delete model"
+            />
           </div>
         </CardContent>
         <CardFooter>

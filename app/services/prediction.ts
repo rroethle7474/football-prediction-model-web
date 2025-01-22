@@ -20,9 +20,15 @@ interface PredictionResponse {
   status: string;
 }
 
-interface ModelsResponse {
-  models: string[];
+interface ModelResponse {
   status: string;
+  models: Array<{
+    name: string;
+    description: string[];
+    tags: string[];
+    lastModified: string;
+    readme: string | null;
+  }>;
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -47,12 +53,14 @@ export async function getPrediction(homeTeam: string, awayTeam: string, modelNam
   return response.json();
 }
 
-export async function getModels(): Promise<ModelsResponse> {
-  const response = await fetch(`${API_BASE_URL}/models`);
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch models');
-  }
+export const getModels = async (): Promise<ModelResponse> => {
 
-  return response.json();
-}
+  const response = await fetch(`${API_BASE_URL}/models`);
+  const data = await response.json();
+  
+  if (data.status !== 'success') {
+    throw new Error(data.message || 'Failed to fetch models');
+  }
+  
+  return data;
+};
