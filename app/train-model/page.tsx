@@ -43,10 +43,53 @@ export default function TrainModel() {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
   const [password, setPassword] = useState('')
   const [modelDescription, setModelDescription] = useState('')
+  const [modelNameValidation, setModelNameValidation] = useState<{ isValid: boolean; message?: string }>({ isValid: false });
 
   useEffect(() => {
     fetchModels();
   }, []);
+
+  const validateModelName = (name: string): { isValid: boolean; message?: string } => {
+    if (!name) {
+      return { isValid: false };
+    }
+  
+    // Check length
+    if (name.length > 96) {
+      return { 
+        isValid: false, 
+        message: 'Model name must be less than 96 characters' 
+      };
+    }
+  
+    // Check start/end characters
+    if (name.startsWith('-') || name.startsWith('.') || 
+        name.endsWith('-') || name.endsWith('.')) {
+      return { 
+        isValid: false, 
+        message: 'Model name cannot start or end with "-" or "."' 
+      };
+    }
+  
+    // Check for forbidden patterns
+    if (name.includes('--') || name.includes('..')) {
+      return { 
+        isValid: false, 
+        message: 'Model name cannot contain "--" or ".."' 
+      };
+    }
+  
+    // Check for valid characters
+    const validNameRegex = /^[a-zA-Z0-9._-]+$/;
+    if (!validNameRegex.test(name)) {
+      return { 
+        isValid: false, 
+        message: 'Model name can only contain letters, numbers, hyphens (-), underscores (_), and single dots (.)' 
+      };
+    }
+  
+    return { isValid: true };
+  };
 
   const fetchModels = async () => {
     try {
@@ -105,8 +148,11 @@ export default function TrainModel() {
   }
 
   const handleSubmit = async () => {
-    if (!file || !selectedModel || !password || !modelDescription) {
-      setStatus({ type: 'error', message: 'Please select a file, model name, enter the password, and enter the model description' })
+    if (!file || !selectedModel || !password || !modelDescription || !modelNameValidation.isValid) {
+      setStatus({ 
+        type: 'error', 
+        message: 'Please ensure all fields are valid and filled out, including model name format' 
+      })
       return
     }
 
@@ -196,18 +242,34 @@ export default function TrainModel() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Model Name</label>
-            <input
-              type="text"
-              value={selectedModel}
-              onChange={(e) => setSelectedModel(e.target.value)}
-              required
-              placeholder="Enter model name"
-              className="w-full p-2 rounded-md border border-input bg-background"
-              aria-label="Enter model name"
-            />
-          </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Model Name</label>
+          <input
+            type="text"
+            value={selectedModel}
+            onChange={(e) => {
+              setSelectedModel(e.target.value);
+              setModelNameValidation(validateModelName(e.target.value));
+            }}
+            required
+            placeholder="Enter model name"
+            className={`w-full p-2 rounded-md border ${
+              selectedModel && !modelNameValidation.isValid 
+                ? 'border-red-500 focus:ring-red-500' 
+                : 'border-input'
+            } bg-background`}
+            aria-label="Enter model name"
+          />
+          {selectedModel && !modelNameValidation.isValid && modelNameValidation.message && (
+            <div className="text-red-600 text-xs bg-red-50 p-2 rounded mt-1">
+              ⚠️ {modelNameValidation.message}
+            </div>
+          )}
+          <p className="text-xs text-gray-500 mt-1">
+            Model name must only contain letters, numbers, hyphens (-), underscores (_), and dots (.). 
+            Cannot start or end with hyphens or dots. Maximum length is 96 characters.
+          </p>
+        </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Model Description</label>
             <textarea
@@ -299,13 +361,13 @@ export default function TrainModel() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button
-            onClick={handleSubmit}
-            disabled={isLoading || !file || !selectedModel}
-            className="w-full"
-          >
-            {isLoading ? 'Training...' : 'Train'}
-          </Button>
+        <Button
+          onClick={handleSubmit}
+          disabled={isLoading || !file || !selectedModel || !modelNameValidation.isValid}
+          className="w-full"
+        >
+          {isLoading ? 'Training...' : 'Train'}
+        </Button>
 
           {isLoading && (
             <div className="flex justify-center">
