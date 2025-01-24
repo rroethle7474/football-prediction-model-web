@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { getPrediction, getModels } from '@/app/services/prediction'
-import ReactMarkdown from 'react-markdown'
 
 const NFL_TEAMS = [
   'Arizona', 'Atlanta', 'Baltimore', 'Buffalo',
@@ -240,7 +239,7 @@ export default function Predict() {
               <div className="prose prose-sm dark:prose-invert max-w-none">
                 {selectedModelInfo ? (
                   selectedModelInfo.readme ? (
-                    <ReactMarkdown>{selectedModelInfo.readme}</ReactMarkdown>
+                    <div className="whitespace-pre-wrap">{selectedModelInfo.readme}</div>
                   ) : (
                     <p className="text-muted-foreground italic">No README file available for this model</p>
                   )
