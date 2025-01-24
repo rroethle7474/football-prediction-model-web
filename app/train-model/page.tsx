@@ -95,7 +95,12 @@ export default function TrainModel() {
     try {
       const response = await getModels();
       if (response.status === 'success') {
-        setAvailableModels(response.models);
+        setAvailableModels(response.models.map(model => ({
+          ...model,
+          description: Array.isArray(model.description) ? model.description : 
+                      typeof model.description === 'string' ? [model.description] : [],
+          tags: Array.isArray(model.tags) ? model.tags : []
+        })));
       } else {
         setStatus({ type: 'error', message: 'Failed to fetch models' });
       }

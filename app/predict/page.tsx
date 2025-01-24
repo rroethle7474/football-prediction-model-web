@@ -56,8 +56,9 @@ export default function Predict() {
         if (response.status === 'success' && Array.isArray(response.models)) {
           const modelsData: ModelInfo[] = response.models.map(model => ({
             name: model.name,
-            description: model.description || [],
-            tags: model.tags || [],
+            description: Array.isArray(model.description) ? model.description : 
+                        typeof model.description === 'string' ? [model.description] : [],
+            tags: Array.isArray(model.tags) ? model.tags : [],
             lastModified: model.lastModified || new Date().toISOString(),
             readme: model.readme || null
           }));
