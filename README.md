@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NFL Stats Predictor
 
-## Getting Started
+## Project Description
+Frontend project to predict nfl stats based on trained models using previous statistics. 
 
-First, run the development server:
+Production URL: https://www.jclleague.com/
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Technologies Used
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This project is built with the following technologies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Next.js** - React framework for server-rendered applications
+- **React** - Frontend library for building user interfaces
+- **Tailwind CSS** - Utility-first CSS framework for styling
+- **TypeScript** - Static type-checking for JavaScript
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Running Locally
 
-## Learn More
+To run this project locally, follow these steps:
 
-To learn more about Next.js, take a look at the following resources:
+1. Clone the repository
+   ```bash
+   git clone [your-repository-url]
+   cd nfl-stats-predictor
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Install dependencies
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Set up environment variables
+   Create a `.env.local` file in the root directory and add your environment variables (see Environment Variables section below)
 
-## Deploy on Vercel
+4. Start the development server
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Routes
+
+The application includes the following main routes:
+
+- **Home (/)** - Landing page with an introduction to the NFL Stats Predictor
+- **Predict (/predict)** - Make predictions using trained models
+- **Build Model (/build-model)** - Create and configure new prediction models
+- **Train Model (/train-model)** - Train models with historical NFL data
+
+## Environment Variables
+
+The following environment variables are required to run the application: (see .env file)
+
+| Variable | Description |
+|----------|-------------|
+| [NEXT_PUBLIC_API_BASE_URL] | [API URL run locally based on this repo: https://github.com/rroethle7474/football-prediction-model-api ] |
+
+
+## Deployment
+
+The frontend and API used for this project are currently hosted within Azure.
